@@ -31,6 +31,9 @@ Pessoa física que quer não esquecer vencimentos (luz, aluguel, cartão) e ver 
 - Health check de deploy: sem bloqueios (status WARN só por metadados de loja)
 - Política de privacidade pública em GET /api/privacy (HTML) para usar como URL nas lojas
 
+## Implementado (iteração 4)
+- Health check de deploy: PASS (adicionado GET /health no nível raiz; METRO_CACHE_ROOT entre aspas no frontend/.env)
+
 ## Backlog
 - P1: recuperação de senha por e-mail (Resend), login com Google
 - P1: gráficos por categoria/mês

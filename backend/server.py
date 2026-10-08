@@ -24,6 +24,12 @@ app = FastAPI(title="Contas em Dia API", lifespan=lifespan)
 api_router = APIRouter(prefix="/api")
 
 
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
+
+
+
 @api_router.get("/")
 async def root():
     return {"message": "Contas em Dia API"}
