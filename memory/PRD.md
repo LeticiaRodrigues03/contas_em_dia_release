@@ -22,8 +22,12 @@ Pessoa física que quer não esquecer vencimentos (luz, aluguel, cartão) e ver 
 - Notificações locais (expo-notifications) ressincronizadas a cada mudança (máx. 60 agendadas, 9h)
 - app.json: nome, slug, scheme, permissões Android, plugin notifications
 
+## Implementado (2026-10-08, iteração 2)
+- Logo oficial: ícone do app, adaptive icon, splash, favicon e cabeçalho/login
+- Tela /report: gráfico de gastos por categoria (barra empilhada + barras por categoria com %), cartão de resumo mensal, compartilhar no WhatsApp (wa.me texto) e como imagem (nativo, view-shot)
+- Acesso discreto pelo botão no cartão de resumo da Home
+
 ## Backlog
-- P0: substituir ícone/splash/adaptive-icon pelo logo oficial (assets/images) e trocar componente Logo
 - P1: recuperação de senha por e-mail (Resend), login com Google
 - P1: gráficos por categoria/mês
 - P2: anexar comprovante (object storage), widget, compartilhar conta

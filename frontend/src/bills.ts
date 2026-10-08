@@ -95,6 +95,22 @@ export function monthSummary(bills: Bill[], year: number, month: number) {
   };
 }
 
+/** Spending per category in a month (all bills, paid + pending), largest first. */
+export function categoryBreakdown(bills: Bill[], year: number, month: number) {
+  const map = new Map<string, { total: number; paid: number; count: number }>();
+  for (const b of bills) {
+    if (!inMonth(b.due_date, year, month)) continue;
+    const cur = map.get(b.category) ?? { total: 0, paid: 0, count: 0 };
+    cur.total += b.amount || 0;
+    if (b.paid) cur.paid += b.amount || 0;
+    cur.count += 1;
+    map.set(b.category, cur);
+  }
+  return [...map.entries()]
+    .map(([category, v]) => ({ category, ...v }))
+    .sort((a, b) => b.total - a.total || b.count - a.count);
+}
+
 /** "12345" (cents typed) -> 123.45 */
 export function centsToNumber(digits: string): number {
   const n = parseInt(digits.replace(/\D/g, "") || "0", 10);

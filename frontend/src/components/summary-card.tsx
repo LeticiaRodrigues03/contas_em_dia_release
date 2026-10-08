@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import { Pressable, Text, View } from "react-native";
 
 import { formatMoney, monthSummary, MONTHS } from "@/src/bills";
@@ -48,6 +49,16 @@ export function SummaryCard({
           </Text>
         </View>
       </View>
+
+      <Pressable
+        testID="summary-open-report"
+        style={({ pressed }) => [styles.report, pressed && { opacity: 0.8 }]}
+        onPress={() => router.push({ pathname: "/report", params: { y: String(year), m: String(month) } })}
+      >
+        <Ionicons name="pie-chart-outline" size={18} color={colors.onBrandSecondary} />
+        <Text style={styles.reportText}>Gastos por categoria · Compartilhar</Text>
+        <Ionicons name="chevron-forward" size={16} color={colors.onBrandSecondary} />
+      </Pressable>
     </View>
   );
 }
@@ -65,4 +76,9 @@ const useStyles = makeStyles((c) => ({
   stat: { flex: 1, backgroundColor: c.surfaceSecondary, borderRadius: radius.md, padding: spacing.md },
   statLabel: { fontFamily: fonts.medium, fontSize: 12, color: c.muted },
   statValue: { fontFamily: fonts.bold, fontSize: 14, color: c.onSurfaceSecondary, marginTop: 2 },
+  report: {
+    marginTop: spacing.md, minHeight: 44, borderRadius: radius.md, backgroundColor: c.brandSecondary,
+    flexDirection: "row", alignItems: "center", justifyContent: "center", gap: spacing.sm, paddingHorizontal: spacing.md,
+  },
+  reportText: { fontFamily: fonts.bold, fontSize: 13, color: c.onBrandSecondary, flexShrink: 1 },
 }));

@@ -1,5 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
+import { Image } from "expo-image";
 import { createContext, ReactNode, useCallback, useContext, useRef, useState } from "react";
 import { ActivityIndicator, Platform, Pressable, StyleProp, Text, View, ViewStyle } from "react-native";
 import Animated, { FadeInDown, FadeOutDown } from "react-native-reanimated";
@@ -15,18 +16,18 @@ export function haptic(kind: "light" | "medium" | "success" | "warning" | "selec
   else void Haptics.impactAsync(kind === "medium" ? Haptics.ImpactFeedbackStyle.Medium : Haptics.ImpactFeedbackStyle.Light);
 }
 
-/** Brand mark: wallet in a 40x40 rounded(12) green-tinted box (placeholder until the official logo arrives). */
+/** Brand mark: official logo in a rounded(12) green-tinted box, as in the original app bar. */
 export function Logo({ size = 40 }: { size?: number }) {
   const { colors } = useTheme();
   return (
     <View
       testID="app-logo"
       style={{
-        width: size, height: size, borderRadius: size * 0.3, backgroundColor: colors.brandSecondary,
-        alignItems: "center", justifyContent: "center",
+        width: size, height: size, borderRadius: size * 0.3, backgroundColor: colors.brandTertiary,
+        alignItems: "center", justifyContent: "center", padding: size * 0.12,
       }}
     >
-      <Ionicons name="wallet" size={size * 0.55} color={colors.brandPrimary} />
+      <Image source={require("../../assets/images/logo.png")} style={{ width: "100%", height: "100%" }} contentFit="contain" />
     </View>
   );
 }
