@@ -1,0 +1,37 @@
+{
+  "summary": "Backend-only verification for new public privacy policy endpoint and regression. Added /app/backend/tests/test_privacy.py (3 tests) covering: (1) GET /api/privacy returns 200 with text/html; (2) body contains title 'Contas em Dia — Política de Privacidade' (em dash via &mdash;) plus required sections (dados, LGPD, contato); (3) endpoint is public — works with no auth header AND ignores invalid bearer token. Also re-ran existing /app/backend/tests/test_contas_em_dia.py (auth, bills CRUD, PATCH /paid recurring+non-recurring, backup export/import, validation). All 14/14 tests PASSED. Verified via public HTTPS URL (EXPO_PUBLIC_BACKEND_URL) directly with curl: HTTP 200, Content-Type: text/html; charset=utf-8, 2658 bytes, h1='Contas em Dia — Política de Privacidade', sections present (Quais dados coletamos, Seus direitos (LGPD), Contato, etc.).",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "GET /api/privacy", "issue": "The <title> HTML tag uses a plain hyphen ('Contas em Dia - Política de Privacidade') while the <h1> uses an em dash via &mdash;. Cosmetic only — the user-visible page title (H1) matches the spec. Consider aligning the <title> tag to also use em dash for consistency. Reference: /app/backend/routers/legal.py:8"}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [],
+    "react_native_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_privacy.py",
+    "/app/backend/tests/test_contas_em_dia.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "(Optional, cosmetic) Change the <title> tag in /app/backend/routers/legal.py from a hyphen to '&mdash;' so it matches the H1 and the deployment agent's expected public privacy policy title exactly."
+  ],
+  "critical_code_review_comments": [
+    "legal.py is clean: single public route under /api prefix, HTMLResponse with correct charset, no DB access, no auth coupling — appropriate for a store-listing privacy URL.",
+    "server.py correctly mounts the legal router under the /api prefix (required for Kubernetes ingress routing).",
+    "No ObjectId leakage, no hardcoded URLs, no env-variable misuse."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_privacy.py (new file - 3 pytest cases)"
+  ],
+  "success_rate": {"backend": "100% (14/14)", "frontend": "not tested (backend-only request)"},
+  "seed_data_creation": "None. Tests register ephemeral TEST_* users and clean them up via DELETE /api/auth/me.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Privacy endpoint is live at https://vencimentos-1.preview.emergentagent.com/api/privacy (public, no auth). Full backend regression suite lives at /app/backend/tests/ with pytest.ini configured; run `pytest backend/tests/ -v` from /app. Env read from /app/frontend/.env (EXPO_PUBLIC_BACKEND_URL).",
+  "rca_of_issue": "N/A — feature-add verification, no bug."
+}

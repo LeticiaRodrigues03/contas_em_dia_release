@@ -27,6 +27,10 @@ Pessoa física que quer não esquecer vencimentos (luz, aluguel, cartão) e ver 
 - Tela /report: gráfico de gastos por categoria (barra empilhada + barras por categoria com %), cartão de resumo mensal, compartilhar no WhatsApp (wa.me texto) e como imagem (nativo, view-shot)
 - Acesso discreto pelo botão no cartão de resumo da Home
 
+## Implementado (iteração 3)
+- Health check de deploy: sem bloqueios (status WARN só por metadados de loja)
+- Política de privacidade pública em GET /api/privacy (HTML) para usar como URL nas lojas
+
 ## Backlog
 - P1: recuperação de senha por e-mail (Resend), login com Google
 - P1: gráficos por categoria/mês

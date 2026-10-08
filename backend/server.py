@@ -5,7 +5,7 @@ from fastapi import APIRouter, FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
 from db import client, db
-from routers import auth, bills
+from routers import auth, bills, legal
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
@@ -31,6 +31,7 @@ async def root():
 
 api_router.include_router(auth.router)
 api_router.include_router(bills.router)
+api_router.include_router(legal.router)
 
 app.include_router(api_router)
 
