@@ -11,7 +11,7 @@ const SECTIONS = [
   ["Notificações", "Os lembretes são notificações locais geradas no próprio aparelho. Você pode desativá-las a qualquer momento em Ajustes."],
   ["Seus direitos (LGPD)", "Você pode exportar todos os seus dados (Ajustes → Exportar backup) e excluir sua conta e todos os dados permanentemente (Ajustes → Excluir minha conta)."],
   ["Segurança", "A comunicação com o servidor é criptografada (HTTPS) e o acesso é protegido por token pessoal armazenado de forma segura no aparelho."],
-  ["Contato", "Dúvidas sobre privacidade: entre em contato pelo e-mail de suporte informado na página do app na loja."],
+  ["Contato", "Dúvidas sobre privacidade: leticiarodrigues173@gmail.com"],
 ];
 
 export default function Privacy() {

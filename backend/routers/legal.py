@@ -16,7 +16,7 @@ h1{color:#059669}h2{color:#047857;font-size:1.1rem;margin-top:1.6rem}</style></h
 <h2>Compartilhamento</h2><p>O resumo mensal só é compartilhado (por exemplo, no WhatsApp) quando você toca em compartilhar.</p>
 <h2>Seus direitos (LGPD)</h2><p>Você pode exportar todos os seus dados (Ajustes &rarr; Exportar backup) e excluir sua conta e todos os dados permanentemente (Ajustes &rarr; Excluir minha conta).</p>
 <h2>Segurança</h2><p>A comunicação com o servidor é criptografada (HTTPS) e o acesso é protegido por token pessoal armazenado de forma segura no aparelho.</p>
-<h2>Contato</h2><p>Dúvidas sobre privacidade: entre em contato pelo e-mail de suporte informado na página do app na loja.</p>
+<h2>Contato</h2><p>Dúvidas sobre privacidade: <a href="mailto:leticiarodrigues173@gmail.com">leticiarodrigues173@gmail.com</a></p>
 </body></html>"""
 
 

@@ -38,3 +38,7 @@ Pessoa física que quer não esquecer vencimentos (luz, aluguel, cartão) e ver 
 - P1: recuperação de senha por e-mail (Resend), login com Google
 - P1: gráficos por categoria/mês
 - P2: anexar comprovante (object storage), widget, compartilhar conta
+
+## Política de privacidade (jun/2026)
+- Arquivo estático para GitHub Pages: `/app/docs/privacy.html` (URL final: https://<usuario>.github.io/<repo>/privacy.html)
+- Contato incluído na política (backend `/api/privacy`, tela `/privacy` e docs): leticiarodrigues173@gmail.com
