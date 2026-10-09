@@ -42,3 +42,8 @@ Pessoa física que quer não esquecer vencimentos (luz, aluguel, cartão) e ver 
 ## Política de privacidade (jun/2026)
 - Arquivo estático para GitHub Pages: `/app/docs/privacy.html` (URL final: https://<usuario>.github.io/<repo>/privacy.html)
 - Contato incluído na política (backend `/api/privacy`, tela `/privacy` e docs): leticiarodrigues173@gmail.com
+
+## Versão web (GitHub Pages) — jun/2026
+- Script: `frontend/scripts/export-web.sh [base-path]` → gera build Expo web em `/docs` (preserva privacy.html, cria .nojekyll e 404.html)
+- Base path: `/contas_em_dia_release` → https://leticiarodrigues03.github.io/contas_em_dia_release/
+- Backend usado pelo build web: EXPO_PUBLIC_BACKEND_URL do frontend/.env (preview). Rebuildar se o backend mudar.
