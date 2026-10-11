@@ -47,3 +47,8 @@ Pessoa física que quer não esquecer vencimentos (luz, aluguel, cartão) e ver 
 - Script: `frontend/scripts/export-web.sh [base-path]` → gera build Expo web em `/docs` (preserva privacy.html, cria .nojekyll e 404.html)
 - Base path: `/contas_em_dia_release` → https://leticiarodrigues03.github.io/contas_em_dia_release/
 - Backend usado pelo build web: EXPO_PUBLIC_BACKEND_URL do frontend/.env (preview). Rebuildar se o backend mudar.
+
+## Recursos visuais Google Play — jun/2026
+- Pasta `/app/play_store_assets/` (README.md com instruções de upload): ícone 512, feature graphic 1024x500, 6 capturas 1080x1920 (reais, conta demo demo@contasemdia.app), vídeo mp4 47s (precisa upload manual no YouTube), avaliação tablet.
+- Gerador: `play_store_assets/tools/generate_assets.py` (PIL) a partir de capturas Playwright em /tmp/raw.
+- Nenhuma alteração em código de produção.
