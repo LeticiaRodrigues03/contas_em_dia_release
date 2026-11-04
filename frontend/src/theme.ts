@@ -2,7 +2,9 @@
 // Style with makeStyles; for non-style color props read useTheme().colors.
 
 import { useMemo, useSyncExternalStore } from "react";
-import { Appearance, StyleSheet, useColorScheme } from "react-native";
+import { Appearance, StyleSheet, useColorScheme, type ImageStyle, type TextStyle, type ViewStyle } from "react-native";
+
+type NamedStyles<T> = { [P in keyof T]: ViewStyle | TextStyle | ImageStyle };
 
 export type ColorScheme = "light" | "dark";
 
@@ -129,11 +131,9 @@ export function useTheme(): { scheme: ColorScheme; colors: ThemeColors } {
   return { scheme, colors: themes[scheme] ?? themes.light };
 }
 
-export function makeStyles<T extends StyleSheet.NamedStyles<T> | StyleSheet.NamedStyles<any>>(
-  factory: (colors: ThemeColors) => T & StyleSheet.NamedStyles<any>,
-): () => T {
+export function makeStyles<T extends NamedStyles<T>>(factory: (colors: ThemeColors) => T): () => T {
   return function useStyles(): T {
     const { colors } = useTheme();
-    return useMemo(() => StyleSheet.create(factory(colors)), [colors]);
+    return useMemo(() => StyleSheet.create(factory(colors) as never) as unknown as T, [colors]);
   };
 }

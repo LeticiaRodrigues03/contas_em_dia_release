@@ -1,0 +1,33 @@
+{
+  "summary": "Frontend regression test after the Expo SDK 57 to 58 upgrade (RN 0.88, React 19.3, expo-router 58, @react-native-vector-icons/ionicons). Ran on the web preview at 375x667 with demo@contasemdia.app. Every requested flow passed. Login works: the wrong password shows 'E-mail ou senha inválidos' and the password toggle works. Ionicons load correctly: the font has status loaded, 26 glyphs render at full width, and no empty squares appear. Home works: the month arrows, Conta Familiar card, overdue and paid sections, FAB to /bill-form and 'Ver todas pagas' to /filter?status=paid all work. Bill CRUD works: 'Teste SDK58' at R$ 10,00 was created for 20/11/2026 via the calendar with category Energia. It was then edited, marked paid and unpaid, and deleted after window.confirm. The API confirms a 404 and the demo account still has 11 bills. On Filtrar, search, clear, the status chips (all 7, pending 7, overdue 7, paid 4), the category chips and the month filter work. In Ajustes, all sections render and the toggles and days-before chips work. The theme switches between light and dark (backgrounds rgb(255,255,255) and rgb(30,30,30)) and was restored to 'Sistema'. Family, Categorias and Privacidade open and their back buttons return. The version shows 1.1.0 and logout works. The report works: month navigation, the category chart, the share card and the WhatsApp button (the image button is hidden on web by design), plus the back button. Conta Familiar works: the group was created with code L72ZHE and the leave confirm returned to the empty state (GET /api/family is null). The browser console shows no uncaught errors or RN/expo-router deprecation warnings, apart from the ignored expo-notifications warning and an expected 401 from the wrong-password test. One visual regression found: the bottom tab labels are clipped.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "Bottom tab bar labels (Início / Filtrar / Ajustes)", "issue": "Labels are cut off at the bottom on web. The tab bar is 48px tall: icon wrapper 28px + 5px padding at top and bottom. That leaves the label div (12px Manrope, overflow:hidden) only 10px of height, so the lower part of the glyphs is clipped. This is likely caused by the new @react-navigation/bottom-tabs layout in expo-router 58. Reference: /app/frontend/app/(tabs)/_layout.tsx:46-47", "testID": "tab-home", "priority": "MEDIUM"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "bill-form (dark theme)", "issues": ["In dark mode the Switch off-state track (borderStrong) has very low contrast against the dark card, so the switches are barely visible."]}
+    ],
+    "react_native_issues": [
+      {"component": "shadow* style props", "issue": "RN-web warns that 'shadow*' style props are deprecated and suggests 'boxShadow'. This was seen in the Metro web log (not in the browser console this run). Reference: /app/frontend/app/(tabs)/index.tsx:162"},
+      {"component": "pointerEvents prop", "issue": "RN-web warns that 'props.pointerEvents is deprecated. Use style.pointerEvents'. References: /app/frontend/app/(tabs)/settings.tsx:171, /app/frontend/src/components/ui.tsx:136"}
+    ]
+  },
+  "test_report_links": [".screenshots (browser automation)", "/app/test_reports/iteration_4.json"],
+  "action_items": [
+    "Fix the clipped tab labels in (tabs)/_layout.tsx. For example, set tabBarStyle height to around 60 + insets.bottom with paddingBottom, or set tabBarLabelStyle lineHeight to 16 and check the result in the 375x667 web preview.",
+    "Optional: replace shadowColor/shadowOpacity/shadowRadius/shadowOffset with boxShadow (supported in RN 0.76+), and move the pointerEvents prop into style.pointerEvents.",
+    "Optional: increase the contrast of the Switch false track in dark mode."
+  ],
+  "critical_code_review_comments": [
+    "No deprecated Expo packages: expo-av, expo-barcode-scanner, expo-background-fetch and @expo/vector-icons are no longer imported. An older Metro log line showing an UnableToResolve error for @expo/vector-icons is from before the fix; the current bundle is clean.",
+    "report.tsx hides 'Compartilhar como imagem' on web (Platform.OS !== 'web') by design, so view-shot 6 capture can only be verified on a native build."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "not tested (frontend only)", "frontend": "97% (all functional flows pass; 1 visual regression)"},
+  "seed_data_creation": "None persisted. 'Teste SDK58' (id 408433a2-...) was created and deleted. Family 'TEST_SDK58 Casa' was created and left/closed. The demo account keeps its 11 bills, no family and default categories.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "The system date is Nov 2026 and the demo bills are in Sep/Oct 2026, so Home November shows 0/0 while 7 bills are overdue. Home row testIDs are section-{overdue|soon|future|paid}-row-{id} and filter rows are filter-row-{id}. Tab testIDs are tab-home, tab-filter and tab-settings. The login API returns access_token (not token). A notifications-intro screen may appear after login; skip it via notifications-intro-skip."
+}

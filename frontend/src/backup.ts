@@ -21,7 +21,7 @@ export async function exportBackup(): Promise<number> {
   } else {
     const file = new File(Paths.cache, name);
     file.create({ overwrite: true });
-    file.write(content);
+    await file.write(content);
     if (await Sharing.isAvailableAsync()) {
       await Sharing.shareAsync(file.uri, { mimeType: "application/json", dialogTitle: "Salvar backup" });
     }

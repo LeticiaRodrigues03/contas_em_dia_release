@@ -11,7 +11,7 @@
 |---|---|
 | Nome | Contas em Dia |
 | Pacote Android / Bundle iOS | `com.emergent.vencimentos.kjfj0h` |
-| Frontend | TypeScript · React Native 0.86 · Expo SDK 57 · Expo Router (rotas por arquivo) |
+| Frontend | TypeScript · React Native 0.88 · Expo SDK 58 · Expo Router 58 (rotas por arquivo) · ícones `@react-native-vector-icons/ionicons` |
 | Backend | Python 3.11 · FastAPI · Motor (MongoDB assíncrono) · JWT |
 | Banco de dados | MongoDB |
 | Idioma do app | Português (pt-BR) |

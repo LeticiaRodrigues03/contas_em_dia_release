@@ -1,4 +1,5 @@
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from "@react-native-vector-icons/ionicons";
+import type { IoniconsIconName as IoniconsName } from "@react-native-vector-icons/ionicons";
 import { router } from "expo-router";
 import { Pressable, Text, View } from "react-native";
 
@@ -85,7 +86,7 @@ export function BillSection({
   title, icon, tone, bills, footer, testID,
 }: {
   title: string;
-  icon: keyof typeof Ionicons.glyphMap;
+  icon: IoniconsName;
   tone: "error" | "warning" | "info" | "success";
   bills: Bill[];
   footer?: React.ReactNode;

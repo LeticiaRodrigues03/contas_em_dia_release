@@ -61,3 +61,9 @@ Pessoa física que quer não esquecer vencimentos (luz, aluguel, cartão) e ver 
 - app.json: version 1.1.0, versionCode 2, buildNumber 2, expo-build-properties (ProGuard/R8 + shrinkResources). Pacote mantido (com.emergent.vencimentos.kjfj0h) por decisão do usuário (listagem já existe na Play).
 - Política de privacidade atualizada (Conta Familiar + Anúncios) em legal.py, privacy.tsx e docs/privacy.html.
 - Testes: iteration_3 (backend 100%, frontend OK); builds .aab/.ipa só via Publish do Emergent (sem SDK local).
+
+## Upgrade Expo SDK 57 → 58 (jun/2026)
+- expo 58 / RN 0.88.1 / React 19.3 / expo-router 58 / reanimated 4.7 / view-shot 6; `@expo/vector-icons` substituído por `@react-native-vector-icons/ionicons` (17 arquivos); removidos expo-symbols e expo-constants (implícitos).
+- Ajustes Strict TS API: `ViewInstance` no ref do report, `makeStyles` sem `StyleSheet.NamedStyles`, FlatList `undefined` em vez de `null`, RefreshControl onRefresh void; `File.write` agora async (backup.ts).
+- web.output mantido `single` (SPA p/ GitHub Pages). Tab bar: altura 60+inset e lineHeight 16 (labels cortados no RN 0.88).
+- expo-doctor 20/20; tsc e eslint limpos; regressão frontend iteration_4 OK.

@@ -1,6 +1,7 @@
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from "@react-native-vector-icons/ionicons";
 import { Redirect, router, Tabs } from "expo-router";
 import { useEffect, useRef } from "react";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useAuth } from "@/src/auth";
 import { useBills } from "@/src/hooks/use-bills";
@@ -33,6 +34,7 @@ function ReminderSync() {
 export default function TabsLayout() {
   const { user, loading } = useAuth();
   const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
   if (!loading && !user) return <Redirect href="/login" />;
 
   return (
@@ -43,8 +45,8 @@ export default function TabsLayout() {
           headerShown: false,
           tabBarActiveTintColor: colors.brandPrimary,
           tabBarInactiveTintColor: colors.muted,
-          tabBarStyle: { backgroundColor: colors.surfaceSecondary, borderTopColor: colors.border },
-          tabBarLabelStyle: { fontFamily: fonts.semibold, fontSize: 12 },
+          tabBarStyle: { backgroundColor: colors.surfaceSecondary, borderTopColor: colors.border, height: 60 + insets.bottom },
+          tabBarLabelStyle: { fontFamily: fonts.semibold, fontSize: 12, lineHeight: 16 },
           sceneStyle: { backgroundColor: colors.surface },
         }}
       >

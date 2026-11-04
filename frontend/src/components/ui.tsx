@@ -1,4 +1,5 @@
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from "@react-native-vector-icons/ionicons";
+import type { IoniconsIconName as IoniconsName } from "@react-native-vector-icons/ionicons";
 import * as Haptics from "expo-haptics";
 import { Image } from "expo-image";
 import { createContext, ReactNode, useCallback, useContext, useRef, useState } from "react";
@@ -37,7 +38,7 @@ interface ButtonProps {
   onPress: () => void;
   testID: string;
   variant?: "primary" | "secondary" | "danger" | "ghost";
-  icon?: keyof typeof Ionicons.glyphMap;
+  icon?: IoniconsName;
   loading?: boolean;
   disabled?: boolean;
   style?: StyleProp<ViewStyle>;

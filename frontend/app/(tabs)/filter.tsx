@@ -1,4 +1,4 @@
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from "@react-native-vector-icons/ionicons";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { FlatList, Pressable, ScrollView, Text, TextInput, View } from "react-native";
@@ -111,12 +111,12 @@ export default function Filter() {
             <Text testID="filter-results-count" style={styles.count}>
               {results.length} {results.length === 1 ? "conta" : "contas"} · {formatMoney(total)}
             </Text>
-          ) : null
+          ) : undefined
         }
         ItemSeparatorComponent={() => <View style={styles.sep} />}
         renderItem={({ item }) => <BillRow bill={item} testIDPrefix="filter" />}
         ListEmptyComponent={
-          isLoading ? null : (
+          isLoading ? undefined : (
             <View style={styles.empty} testID="filter-empty-state">
               <View style={styles.emptyIcon}>
                 <Ionicons name="search-outline" size={40} color={colors.brandPrimary} />

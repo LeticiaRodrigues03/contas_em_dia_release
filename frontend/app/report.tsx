@@ -1,9 +1,9 @@
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from "@react-native-vector-icons/ionicons";
 import { Image } from "expo-image";
 import { router, useLocalSearchParams } from "expo-router";
 import * as Sharing from "expo-sharing";
 import { useRef, useState } from "react";
-import { Linking, Platform, Pressable, ScrollView, Text, View } from "react-native";
+import { Linking, Platform, Pressable, ScrollView, Text, View, type ViewInstance } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { captureRef } from "react-native-view-shot";
 
@@ -34,7 +34,7 @@ export default function Report() {
   const max = Math.max(...cats.map((c) => c.total), 1);
   const pct = s.total ? Math.round((s.paidCount / s.total) * 100) : 0;
   const colorsList = palette(colors);
-  const shotRef = useRef<View>(null);
+  const shotRef = useRef<ViewInstance>(null);
   const [sharing, setSharing] = useState(false);
 
   const shift = (d: number) =>

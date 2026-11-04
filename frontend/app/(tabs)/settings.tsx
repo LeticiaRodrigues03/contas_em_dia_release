@@ -1,4 +1,5 @@
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from "@react-native-vector-icons/ionicons";
+import type { IoniconsIconName as IoniconsName } from "@react-native-vector-icons/ionicons";
 import { useQueryClient } from "@tanstack/react-query";
 import { router, useFocusEffect } from "expo-router";
 import { ReactNode, useCallback, useState } from "react";
@@ -31,7 +32,7 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 function Row({
   icon, title, subtitle, right, onPress, testID, danger, loading,
 }: {
-  icon: keyof typeof Ionicons.glyphMap; title: string; subtitle?: string; right?: ReactNode;
+  icon: IoniconsName; title: string; subtitle?: string; right?: ReactNode;
   onPress?: () => void; testID: string; danger?: boolean; loading?: boolean;
 }) {
   const styles = useStyles();
