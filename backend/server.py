@@ -5,7 +5,7 @@ from fastapi import APIRouter, FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
 from db import client, db
-from routers import auth, bills, legal
+from routers import auth, bills, categories, family, legal
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
@@ -16,6 +16,11 @@ async def lifespan(_: FastAPI):
     await db.users.create_index("id", unique=True)
     await db.bills.create_index([("user_id", 1), ("due_date", 1)])
     await db.bills.create_index("id", unique=True)
+    await db.families.create_index("id", unique=True)
+    await db.families.create_index("code", unique=True)
+    await db.families.create_index("member_ids")
+    await db.categories.create_index("id", unique=True)
+    await db.categories.create_index([("user_id", 1), ("name", 1)])
     yield
     client.close()
 
@@ -37,6 +42,8 @@ async def root():
 
 api_router.include_router(auth.router)
 api_router.include_router(bills.router)
+api_router.include_router(categories.router)
+api_router.include_router(family.router)
 api_router.include_router(legal.router)
 
 app.include_router(api_router)

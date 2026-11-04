@@ -76,7 +76,7 @@ class TestBills:
         hB = auth_headers(user_b["token"])
 
         # list categories
-        c = api.get(f"{base_url}/api/categories")
+        c = api.get(f"{base_url}/api/categories", headers=hA)  # now auth-scoped (custom categories)
         assert c.status_code == 200 and "Moradia" in c.json()
 
         # create

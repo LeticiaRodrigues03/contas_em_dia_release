@@ -1,19 +1,29 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Redirect, Tabs } from "expo-router";
-import { useEffect } from "react";
+import { Redirect, router, Tabs } from "expo-router";
+import { useEffect, useRef } from "react";
 
 import { useAuth } from "@/src/auth";
 import { useBills } from "@/src/hooks/use-bills";
-import { requestPermission, syncReminders } from "@/src/notifications";
+import { getPermissionState, notificationsSupported, syncReminders } from "@/src/notifications";
 import { usePrefs } from "@/src/prefs";
 import { fonts, useTheme } from "@/src/theme";
 
 function ReminderSync() {
   const { data } = useBills();
-  const { prefs, ready } = usePrefs();
+  const { prefs, ready, update } = usePrefs();
+  const asked = useRef(false);
+
+  // First access: explain, then ask (once). Never re-prompt on later launches.
   useEffect(() => {
-    if (ready && prefs.notificationsEnabled) void requestPermission();
-  }, [ready, prefs.notificationsEnabled]);
+    if (!ready || prefs.notificationPromptDone || asked.current || !notificationsSupported) return;
+    asked.current = true;
+    void getPermissionState().then((p) => {
+      if (p.granted) update({ notificationPromptDone: true });
+      else if (p.canAskAgain) router.push("/notifications-intro");
+      else update({ notificationPromptDone: true, notificationsEnabled: false });
+    });
+  }, [ready, prefs.notificationPromptDone, update]);
+
   useEffect(() => {
     if (ready && data) void syncReminders(data, prefs);
   }, [data, prefs, ready]);

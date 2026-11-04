@@ -6,7 +6,9 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { groupBills } from "@/src/bills";
+import { AdBanner } from "@/src/components/ad-banner";
 import { BillSection } from "@/src/components/bill-row";
+import { FamilyCard } from "@/src/components/family-card";
 import { SummaryCard } from "@/src/components/summary-card";
 import { Button, Logo } from "@/src/components/ui";
 import { useAuth } from "@/src/auth";
@@ -45,6 +47,7 @@ export default function Home() {
         </View>
       </View>
 
+      <View style={{ flex: 1 }}>
       {isLoading ? (
         <View style={styles.center}>
           <ActivityIndicator testID="home-loading" color={colors.brandPrimary} size="large" />
@@ -64,6 +67,9 @@ export default function Home() {
           <Text style={styles.emptyTitle}>Tudo em dia por aqui 💚</Text>
           <Text style={styles.emptyText}>Cadastre suas contas e receba lembretes antes do vencimento.</Text>
           <Button testID="home-add-first-bill" label="Adicionar primeira conta" icon="add" onPress={openNew} style={{ marginTop: spacing.xl }} />
+          <View style={{ marginTop: spacing.xl, alignSelf: "stretch" }}>
+            <FamilyCard />
+          </View>
         </Animated.View>
       ) : (
         <ScrollView
@@ -73,6 +79,9 @@ export default function Home() {
           <Text testID="home-greeting" style={styles.greeting}>Olá, {firstName}</Text>
           <Animated.View entering={FadeInDown.duration(350)}>
             <SummaryCard bills={bills} year={ym.y} month={ym.m} onChangeMonth={changeMonth} />
+          </Animated.View>
+          <Animated.View entering={FadeInDown.delay(40).duration(350)}>
+            <FamilyCard />
           </Animated.View>
 
           {[
@@ -123,6 +132,8 @@ export default function Home() {
           <Ionicons name="add" size={30} color={colors.onBrandPrimary} />
         </Pressable>
       ) : null}
+      </View>
+      <AdBanner testID="ad-banner-home" />
     </View>
   );
 }

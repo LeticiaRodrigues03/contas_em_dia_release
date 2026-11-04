@@ -2,7 +2,7 @@
   "expo": {
     "name": "Contas em Dia",
     "slug": "contas-em-dia",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "contasemdia",
@@ -10,6 +10,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.emergent.vencimentos.kjfj0h",
+      "buildNumber": "2",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
@@ -20,6 +21,7 @@
         "backgroundColor": "#FFFFFF"
       },
       "package": "com.emergent.vencimentos.kjfj0h",
+      "versionCode": 2,
       "permissions": [
         "android.permission.POST_NOTIFICATIONS",
         "android.permission.RECEIVE_BOOT_COMPLETED",
@@ -53,6 +55,26 @@
         "expo-notifications",
         {
           "color": "#059669"
+        }
+      ],
+      [
+        "react-native-google-mobile-ads",
+        {
+          "androidAppId": "ca-app-pub-2657624729248606~7442066159",
+          "iosAppId": "ca-app-pub-2657624729248606~5075370221",
+          "userTrackingUsageDescription": "Usado para exibir anúncios mais relevantes para você.",
+          "delayAppMeasurementInit": true,
+          "optimizeInitialization": true,
+          "optimizeAdLoading": true
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "enableProguardInReleaseBuilds": true,
+            "enableShrinkResourcesInReleaseBuilds": true
+          }
         }
       ]
     ],

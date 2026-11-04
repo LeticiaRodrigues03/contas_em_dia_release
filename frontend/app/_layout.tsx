@@ -27,6 +27,7 @@ function ThemedStack() {
       <StatusBar style={scheme === "dark" ? "light" : "dark"} />
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.surface } }}>
         <Stack.Screen name="bill-form" options={{ presentation: "modal" }} />
+        <Stack.Screen name="notifications-intro" options={{ presentation: "modal", gestureEnabled: false }} />
       </Stack>
     </>
   );

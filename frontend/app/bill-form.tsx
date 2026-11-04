@@ -9,11 +9,12 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { api, BILLS_KEY } from "@/src/api";
 import { centsToNumber, formatDate, formatMoney, toIso, today } from "@/src/bills";
 import { CalendarPicker } from "@/src/components/calendar-picker";
-import { Button, Chip, haptic, useToast } from "@/src/components/ui";
+import { CategoryPicker } from "@/src/components/category-picker";
+import { Button, haptic, useToast } from "@/src/components/ui";
 import { useDeleteBill } from "@/src/hooks/use-bills";
 import { queryClient } from "@/src/query-client";
 import { fonts, makeStyles, radius, spacing, useTheme } from "@/src/theme";
-import { Bill, BillInput, CATEGORIES } from "@/src/types";
+import { Bill, BillInput } from "@/src/types";
 
 export default function BillForm() {
   const styles = useStyles();
@@ -135,11 +136,7 @@ export default function BillForm() {
 
           <View style={styles.field}>
             <Text style={styles.label}>Categoria</Text>
-            <View style={styles.chips}>
-              {CATEGORIES.map((c) => (
-                <Chip key={c} testID={`bill-form-category-${c}`} label={c} selected={category === c} onPress={() => setCategory(c)} />
-              ))}
-            </View>
+            <CategoryPicker value={category} onChange={setCategory} testIDPrefix="bill-form" />
           </View>
 
           <View style={styles.card}>
@@ -196,7 +193,6 @@ const useStyles = makeStyles((c) => ({
   dateBtn: { minHeight: 52, borderRadius: radius.md, backgroundColor: c.surfaceTertiary, borderWidth: 1, borderColor: c.border, paddingHorizontal: spacing.lg, flexDirection: "row", alignItems: "center", gap: spacing.md },
   dateText: { flex: 1, fontFamily: fonts.bold, fontSize: 16, color: c.onSurface },
   dateAction: { fontFamily: fonts.bold, fontSize: 14, color: c.brandPrimary },
-  chips: { flexDirection: "row", flexWrap: "wrap", gap: spacing.sm },
   card: { backgroundColor: c.surfaceSecondary, borderRadius: radius.lg, borderWidth: 1, borderColor: c.border },
   switchRow: { flexDirection: "row", alignItems: "center", gap: spacing.md, padding: spacing.lg, minHeight: 64 },
   divider: { borderTopWidth: 1, borderTopColor: c.divider },

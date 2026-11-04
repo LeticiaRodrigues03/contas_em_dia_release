@@ -131,17 +131,43 @@ Resposta de registro/login: `{ access_token, token_type: "bearer", user: { id, n
 | GET | `/export` | `{ app: "contas-em-dia", version: 1, exported_at, bills: [...] }` |
 | POST | `/import` | `{ bills: [...], replace: false }` → `{ imported: n }`. `replace=true` apaga as contas atuais antes |
 
-### 3.4 Outros
+### 3.4 Categorias — `/api/categories`
+| Método | Rota | Descrição |
+|---|---|---|
+| GET | `/` | Lista de nomes: 12 padrões + personalizadas visíveis (suas e do grupo) |
+| GET | `/custom` | `{ defaults: [...], custom: [{ id, user_id, name }] }` |
+| POST | `/custom` | Cria `{ name }` (2–30 caracteres; 409 se duplicada ou igual a padrão) |
+| PUT | `/custom/{id}` | Renomeia e atualiza todas as contas que usavam o nome antigo |
+| DELETE | `/custom/{id}` | Exclui; contas que a usavam passam para `Outros` (nenhuma conta é apagada) |
+
+### 3.5 Conta Familiar — `/api/family`
+| Método | Rota | Descrição |
+|---|---|---|
+| GET | `/` | Meu grupo (`null` se não houver) — `{ id, name, code, owner_id, members: [{ id, name, email, is_owner }] }` |
+| POST | `/` | Cria grupo `{ name }` e gera código de convite de 6 caracteres (409 se já estiver em um grupo) |
+| POST | `/join` | Entra com `{ code }` (404 código inválido; máx. 10 pessoas) |
+| POST | `/leave` | Sai do grupo; se for o criador, a liderança passa ao próximo; se for o último, o grupo é apagado |
+| DELETE | `/members/{id}` | Criador remove uma pessoa |
+| POST | `/code` | Criador gera um novo código (o antigo deixa de valer) |
+
+**Regra de compartilhamento:** todas as rotas de contas e categorias usam o "escopo" do usuário
+(`sharing.scope_ids`): o próprio id + ids dos membros do grupo. Assim, membros veem, editam, pagam e
+excluem as mesmas contas. Ao sair, cada um fica só com as suas contas; categorias personalizadas ainda
+usadas pelo grupo são copiadas para que nenhuma conta mude de categoria.
+
+### 3.6 Outros
 | Rota | Descrição |
 |---|---|
 | `GET /api/privacy` | Política de privacidade em HTML (link para as lojas) |
 | `GET /health` | Readiness check (HTTP 200) |
 
-### 3.5 Coleções MongoDB
+### 3.7 Coleções MongoDB
 - `users`: `{ id, name, email (único), password_hash, created_at }`
 - `bills`: documentos no formato `Bill` acima (`due_date` salvo como string ISO)
+- `categories`: `{ id, user_id, name, created_at }` (categorias personalizadas)
+- `families`: `{ id, name, code (único), owner_id, member_ids: [...], created_at }`
 
-### 3.6 Variáveis de ambiente (`backend/.env`)
+### 3.8 Variáveis de ambiente (`backend/.env`)
 | Variável | Uso |
 |---|---|
 | `MONGO_URL` | String de conexão do MongoDB |
@@ -162,6 +188,9 @@ Resposta de registro/login: `{ access_token, token_type: "bearer", user: { id, n
 /(tabs)/settings → Ajustes        ┘
 /bill-form       → Nova conta / Editar (modal, param ?id=)
 /report          → Relatório mensal + compartilhar
+/family          → Conta Familiar (criar grupo, entrar com código, membros, sair)
+/categories      → Gerenciar categorias personalizadas (criar, renomear, excluir)
+/notifications-intro → Explicação + pedido de permissão de notificações (1ª abertura, só nativo)
 /privacy         → Política de privacidade
 ```
 
@@ -173,6 +202,10 @@ Resposta de registro/login: `{ access_token, token_type: "bearer", user: { id, n
 
 ### 4.3 Lembretes (`src/notifications.ts`)
 - Usa `expo-notifications` (notificações **locais**, sem servidor push).
+- **Primeiro acesso**: `(tabs)/_layout.tsx` verifica a permissão; se ainda não decidida, abre
+  `/notifications-intro` (explicação → diálogo do sistema). O resultado grava `notificationPromptDone`
+  nas preferências, então o pedido nunca se repete. Se negada, o app segue normal e Ajustes mostra
+  "Permissão negada → abrir ajustes do aparelho".
 - `syncReminders(bills, prefs)`: cancela tudo e reagenda, para cada conta pendente, avisos em
   D‑5, D‑3, D‑1 e (opcional) no dia do vencimento, às 9h.
 - Permissão pedida de forma contextual; se negada, a UI oferece abrir os Ajustes do sistema.
@@ -186,11 +219,28 @@ Resposta de registro/login: `{ access_token, token_type: "bearer", user: { id, n
 - Dois modos: **"Compartilhar no WhatsApp"** envia o resumo em texto (abre o WhatsApp / `wa.me`) e
   **"Compartilhar como imagem"** captura o cartão do mês e abre a folha nativa (apenas celular).
 
-### 4.6 Tema (`src/theme.ts`)
+### 4.6 Anúncios (AdMob)
+- Biblioteca `react-native-google-mobile-ads` (config plugin em `app.json` com os App IDs Android/iOS).
+- `src/components/ad-banner.native.tsx`: consentimento Google UMP → inicialização → banner adaptativo
+  ancorado. O slot só ocupa espaço depois que um anúncio carrega; sem anúncio/sem internet, nada aparece.
+  Em Expo Go (módulo nativo ausente) e na web (`ad-banner.tsx`) o componente renderiza vazio.
+- Posição: rodapé das abas **Início** e **Filtrar** (acima da barra de abas). Nunca em cadastro,
+  relatório ou ajustes.
+- IDs dos blocos em `src/ads-config.ts` (produção) — em `__DEV__` usa automaticamente os IDs de teste do Google.
+
+### 4.7 Conta Familiar (frontend)
+- `src/hooks/use-family.ts` (query `["family"]` + mutações), card na Home (`family-card.tsx`),
+  seção em Ajustes e tela `/family`. Nas listas, contas de outro membro mostram um selo com o primeiro nome.
+
+### 4.8 Categorias personalizadas (frontend)
+- `src/hooks/use-categories.ts`; `CategoryPicker` no formulário (chips + "Nova categoria");
+  chips da aba Filtrar vêm da mesma lista; gerenciamento em Ajustes → Minhas categorias.
+
+### 4.9 Tema (`src/theme.ts`)
 Identidade verde: primária `#059669`. Fontes **Outfit** (títulos) e **Manrope** (texto).
 Todas as cores devem vir do tema (`colors` / `useTheme()`).
 
-### 4.7 Permissões declaradas (`app.json`)
+### 4.10 Permissões declaradas (`app.json`)
 - Android: `POST_NOTIFICATIONS`, `SCHEDULE_EXACT_ALARM`, `RECEIVE_BOOT_COMPLETED`.
 - iOS: descrição de uso de notificações.
 
@@ -220,6 +270,11 @@ Scripts úteis:
   (base padrão `/contas_em_dia_release`).
 
 ---
+
+### 5.1 Build Android (Google Play)
+- `app.json` → `expo-build-properties`: `enableProguardInReleaseBuilds` e `enableShrinkResourcesInReleaseBuilds`
+  ativados (R8 — resolve o aviso "otimização de código DEX abaixo do limite" da Play).
+- Versão atual: `1.1.0` · `android.versionCode 2` · `ios.buildNumber 2` (incrementar a cada envio).
 
 ## 6. Publicação
 

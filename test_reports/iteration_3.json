@@ -1,0 +1,42 @@
+{
+  "summary": "Tested Conta Familiar, shared bills, custom categories and account deletion on the backend, plus the frontend flows on the Expo web preview at 375x667. Backend: 25/25 pytest pass. This includes the new test_family_categories.py (10 tests) and one stale regression test I fixed: /api/categories now requires auth. Frontend: all requested flows work. Ana created a group and got a 6-character code. Bruno got the error toast for an invalid code, then joined in a second browser context. On his Home, 10 rows showed the 'Ana' owner pill. He does not see 'Gerar novo código'. He left the group and went back to the empty state. Ana left the group the same way. Settings shows 'Conta Familiar' with the group name and code. The 'Nova categoria' modal rejects 'moradia' (already a default) and creates 'Assinaturas', which is selected automatically. The filter chip filters correctly, and rename and delete on /categories work. After deletion the bill moves to 'Outros'. Regression passed: bill create/edit/delete, the paid toggle, status and month filters, and the report. 'Testar notificação' is gone. Two issues found: (1) on web the version shows 1.0.0 instead of 1.1.0; (2) a backend logic bug where a member who leaves loses their own custom categories. No deprecated Expo packages found (expo-av, expo-barcode-scanner and expo-background-fetch are not used). Final state: Ana and Bruno have no group and no custom categories. Ana still has her 11 original bills and Bruno has 0. All TEST data is removed.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "POST /api/family/leave + DELETE /api/family/members/{id} (sharing.detach_user)", "issue": "When a member leaves or is removed, detach_user moves ALL of their custom categories to remaining[0]. Their own bills keep the category name, but the category is no longer in their scope. Reproduced: B creates 'TEST MinhaCat' with a bill in it, joins A's group, then leaves. Afterwards GET /api/categories for B has no custom categories and A now owns 'TEST MinhaCat'. If B edits that bill without changing anything, PUT sets category='Outros' (resolve_category). The filter chip also disappears for B. Reference: /app/backend/sharing.py:63-64. Suggested fix: on leave, copy the categories (keep the user's own and give the group a copy), or re-create for the leaving user any category names used by their bills."},
+      {"endpoint": "DELETE /api/auth/me", "issue": "Spec says this deletes the user's categories. But detach_user runs first and transfers them to the family, so delete_many on categories matches nothing when the user is in a group. This looks intended (keeps the group consistent). Flagging it so the spec and code can be aligned. Reference: /app/backend/routers/auth.py:43-44"},
+      {"endpoint": "POST /api/family/join", "issue": "The MAX_MEMBERS check and $addToSet are separate, non-atomic operations, so concurrent joins could exceed 10 members. Low risk. Reference: /app/backend/routers/family.py:45-47"}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "Settings → Versão", "issue": "On the web preview the version reads '1.0.0' although app.json has version 1.1.0 (Expo restarted after the app.json change). Constants.expoConfig?.version is undefined or stale on web, so the hardcoded fallback '1.0.0' is shown. Reference: /app/frontend/app/(tabs)/settings.tsx:230", "testID": "settings-version", "priority": "LOW"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Categorias (/categories)", "issues": ["Rename and delete icon buttons are 40x40 (with hitSlop 6), below the 44pt visual guideline. Reference: /app/frontend/app/categories.tsx:136"]},
+      {"screen": "Home bill rows", "issues": ["The owner pill uses fontSize 10, which is small for accessibility. Consider 11-12. Reference: /app/frontend/src/components/bill-row.tsx:76"]}
+    ],
+    "react_native_issues": [
+      {"component": "deprecated-style-props", "issue": "Expo web logs warn that props.pointerEvents is deprecated (use style.pointerEvents) and that 'shadow*' style props are deprecated (use boxShadow). Non-blocking. Reference: /var/log/supervisor/expo.*.log"}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_family_categories.py", "/app/backend/tests/test_contas_em_dia.py", "/app/test_reports/pytest/pytest_results_iter3.xml"],
+  "action_items": [
+    "Fix sharing.detach_user so a leaving or removed member keeps their own custom categories (or gets copies). Today their bills silently turn into 'Outros' the next time they are edited (sharing.py:63-64).",
+    "Show the correct version on web: use Constants.expoConfig?.version with a fallback that matches app.json, or read it from expo-application / a shared constant. Then restart Expo with a clean Metro cache and verify 1.1.0 (settings.tsx:230).",
+    "Optional: enlarge the category action buttons to 44x44, and replace the deprecated pointerEvents prop and shadow* styles."
+  ],
+  "critical_code_review_comments": [
+    "Family join is not atomic: the member-count check and $addToSet are separate operations (family.py:45-47).",
+    "DELETE /api/categories/custom by any family member also deletes a category another member created. This is acceptable for shared semantics, but there is no owner restriction.",
+    "Bills screen FlatList is virtualized on web. Rows beyond the initial render are not in the DOM until you scroll; use the search box in tests."
+  ],
+  "updated_files": ["/app/backend/tests/test_contas_em_dia.py (GET /api/categories now sends auth header)", "/app/backend/tests/test_family_categories.py (new)"],
+  "success_rate": {"backend": "100% (25/25)", "frontend": "~97% (all flows pass; version label wrong on web)"},
+  "seed_data_creation": "None kept. Temporary TEST_ users, groups, categories and bills were created and removed by id. Two old test_*@contas.app users from 2026-10-08 (earlier iterations) remain; I left them untouched.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Use a browser User-Agent for the public URL. Dialogs are window.confirm on web, so auto-accept them with page.on('dialog'). Section headers are uppercased with textTransform, so innerText shows 'NOTIFICAÇÕES' etc. The browser clock is Nov 2026, so the demo bills show as overdue. Do not toggle Ana's recurring bills: that creates the next month's bill.",
+  "rca_of_issue": "Category loss on leave: detach_user() runs db.categories.update_many({user_id: leaver}, {$set: {user_id: remaining[0]}}). After that, scope_ids(leaver) = [leaver] has no categories, and resolve_category() maps unknown names to 'Outros' on PUT. Repro: user B creates a custom category and a bill in it, joins a group, leaves, then edits the bill and gets category 'Outros'."
+}

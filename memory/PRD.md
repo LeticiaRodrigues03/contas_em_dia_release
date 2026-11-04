@@ -52,3 +52,12 @@ Pessoa física que quer não esquecer vencimentos (luz, aluguel, cartão) e ver 
 - Pasta `/app/play_store_assets/` (README.md com instruções de upload): ícone 512, feature graphic 1024x500, 6 capturas 1080x1920 (reais, conta demo demo@contasemdia.app), vídeo mp4 47s (precisa upload manual no YouTube), avaliação tablet.
 - Gerador: `play_store_assets/tools/generate_assets.py` (PIL) a partir de capturas Playwright em /tmp/raw.
 - Nenhuma alteração em código de produção.
+
+## Upgrade v1.1.0 — jun/2026 (AdMob, Conta Familiar, categorias, notificações, build)
+- AdMob: react-native-google-mobile-ads + UMP; banner adaptativo no rodapé de Início e Filtrar; App IDs em app.json, unit IDs em src/ads-config.ts (env EXPO_PUBLIC_ADMOB_*); só funciona em build nativo.
+- Conta Familiar (novo): backend routers/family.py + sharing.py (scope_ids); grupo com código de 6 chars; contas e categorias compartilhadas entre membros; UI: card Home, /family, seção Ajustes, selo do dono nas linhas.
+- Categorias personalizadas: routers/categories.py; CategoryPicker no formulário; filtro usa lista dinâmica; /categories (renomear/excluir → contas vão p/ "Outros").
+- Removido "Testar notificação"; intro de permissão /notifications-intro no 1º acesso (prefs.notificationPromptDone); Ajustes mostra "Permissão negada → abrir ajustes".
+- app.json: version 1.1.0, versionCode 2, buildNumber 2, expo-build-properties (ProGuard/R8 + shrinkResources). Pacote mantido (com.emergent.vencimentos.kjfj0h) por decisão do usuário (listagem já existe na Play).
+- Política de privacidade atualizada (Conta Familiar + Anúncios) em legal.py, privacy.tsx e docs/privacy.html.
+- Testes: iteration_3 (backend 100%, frontend OK); builds .aab/.ipa só via Publish do Emergent (sem SDK local).

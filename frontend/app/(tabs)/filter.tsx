@@ -7,9 +7,10 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { billStatus, formatMoney, inMonth, MONTHS } from "@/src/bills";
 import { BillRow } from "@/src/components/bill-row";
 import { Chip } from "@/src/components/ui";
+import { AdBanner } from "@/src/components/ad-banner";
 import { useBills } from "@/src/hooks/use-bills";
+import { useCategories } from "@/src/hooks/use-categories";
 import { fonts, makeStyles, radius, spacing, useTheme } from "@/src/theme";
-import { CATEGORIES } from "@/src/types";
 
 const STATUSES = [
   { key: "all", label: "Todas" },
@@ -25,6 +26,7 @@ export default function Filter() {
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{ status?: string }>();
   const { data, isLoading } = useBills();
+  const categories = useCategories();
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<StatusKey>("all");
   const [category, setCategory] = useState<string | null>(null);
@@ -80,7 +82,7 @@ export default function Filter() {
         </ScrollView>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips}>
           <Chip testID="filter-category-all" label="Todas categorias" selected={!category} onPress={() => setCategory(null)} />
-          {CATEGORIES.map((c) => (
+          {categories.map((c) => (
             <Chip key={c} testID={`filter-category-${c}`} label={c} selected={category === c} onPress={() => setCategory(c)} />
           ))}
         </ScrollView>
@@ -125,6 +127,7 @@ export default function Filter() {
           )
         }
       />
+      <AdBanner testID="ad-banner-filter" />
     </View>
   );
 }

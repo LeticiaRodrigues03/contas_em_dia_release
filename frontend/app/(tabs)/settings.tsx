@@ -1,19 +1,22 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useQueryClient } from "@tanstack/react-query";
-import Constants from "expo-constants";
-import { router } from "expo-router";
-import { ReactNode, useState } from "react";
-import { ActivityIndicator, Pressable, ScrollView, Switch, Text, View } from "react-native";
+import { router, useFocusEffect } from "expo-router";
+import { ReactNode, useCallback, useState } from "react";
+import { ActivityIndicator, Linking, Pressable, ScrollView, Switch, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import appConfig from "../../app.json";
 import { api, BILLS_KEY } from "@/src/api";
 import { useAuth } from "@/src/auth";
 import { exportBackup, pickBackup } from "@/src/backup";
 import { Chip, haptic, useToast } from "@/src/components/ui";
 import { confirm } from "@/src/confirm";
-import { notificationsSupported, requestPermission, sendTestNotification } from "@/src/notifications";
+import { useFamily } from "@/src/hooks/use-family";
+import { getPermissionState, notificationsSupported, PermissionState, requestPermission } from "@/src/notifications";
 import { ThemePref, usePrefs } from "@/src/prefs";
 import { fonts, makeStyles, radius, spacing, useTheme } from "@/src/theme";
+
+const APP_VERSION = appConfig.expo.version;
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   const styles = useStyles();
@@ -57,10 +60,25 @@ export default function Settings() {
   const toast = useToast();
   const qc = useQueryClient();
   const [busy, setBusy] = useState<"export" | "import" | "delete" | null>(null);
+  const [perm, setPerm] = useState<PermissionState | null>(null);
+  const { data: family } = useFamily();
+
+  useFocusEffect(
+    useCallback(() => {
+      if (notificationsSupported) void getPermissionState().then(setPerm);
+    }, []),
+  );
 
   const toggleNotifications = async (v: boolean) => {
-    if (v && notificationsSupported && !(await requestPermission())) {
-      toast("Permita as notificações nas configurações do aparelho", "error");
+    if (v && notificationsSupported) {
+      const granted = await requestPermission();
+      if (!granted) {
+        const state = await getPermissionState();
+        setPerm(state);
+        toast(state.canAskAgain ? "Permissão não concedida" : "Permita as notificações nos ajustes do aparelho", "error");
+      } else {
+        setPerm({ granted: true, canAskAgain: true });
+      }
     }
     update({ notificationsEnabled: v });
     toast(v ? "Notificações ativadas" : "Notificações desativadas", "info");
@@ -173,12 +191,24 @@ export default function Settings() {
             />
           }
         />
-        {notificationsSupported ? (
+        {notificationsSupported && prefs.notificationsEnabled && perm && !perm.granted ? (
           <Row
-            testID="settings-test-notification" icon="paper-plane-outline" title="Testar notificação"
-            onPress={async () => toast((await sendTestNotification()) ? "Notificação enviada" : "Permissão negada", "info")}
+            testID="settings-open-system-settings" icon="warning-outline" title="Permissão de notificações negada"
+            subtitle="Toque para abrir os ajustes do aparelho e permitir" onPress={() => void Linking.openSettings()}
           />
         ) : null}
+      </Section>
+
+      <Section title="Conta Familiar">
+        <Row
+          testID="settings-family" icon="people-outline" title={family ? family.name : "Compartilhar com casal ou família"}
+          subtitle={family ? `${family.members.length} ${family.members.length === 1 ? "pessoa" : "pessoas"} · código ${family.code}` : "Todos veem e pagam as mesmas contas"}
+          onPress={() => router.push("/family")}
+        />
+      </Section>
+
+      <Section title="Categorias">
+        <Row testID="settings-categories" icon="pricetags-outline" title="Minhas categorias" subtitle="Criar, renomear ou excluir categorias" onPress={() => router.push("/categories")} />
       </Section>
 
       <Section title="Aparência">
@@ -199,7 +229,7 @@ export default function Settings() {
 
       <Section title="Sobre">
         <Row testID="settings-privacy" icon="shield-checkmark-outline" title="Política de privacidade" onPress={() => router.push("/privacy")} />
-        <Row testID="settings-version" icon="information-circle-outline" title="Versão" right={<Text style={styles.rowSub}>{Constants.expoConfig?.version ?? "1.0.0"}</Text>} />
+        <Row testID="settings-version" icon="information-circle-outline" title="Versão" right={<Text style={styles.rowSub}>{APP_VERSION}</Text>} />
       </Section>
 
       <Section title="Conta">

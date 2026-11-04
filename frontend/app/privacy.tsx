@@ -9,6 +9,8 @@ const SECTIONS = [
   ["Quais dados coletamos", "Nome, e-mail e senha (armazenada apenas como hash criptográfico) para criar sua conta, e as contas que você cadastra: nome, valor, vencimento, categoria e observações."],
   ["Como usamos", "Os dados são usados exclusivamente para exibir suas contas, sincronizá-las entre seus aparelhos e agendar lembretes locais no seu dispositivo. Não vendemos nem compartilhamos seus dados com terceiros."],
   ["Notificações", "Os lembretes são notificações locais geradas no próprio aparelho. Você pode desativá-las a qualquer momento em Ajustes."],
+  ["Conta Familiar", "Ao criar ou entrar em um grupo familiar, suas contas e categorias passam a ser visíveis e editáveis pelas pessoas do grupo, e vice-versa. Você pode sair do grupo a qualquer momento."],
+  ["Anúncios", "O app exibe anúncios do Google AdMob. O AdMob pode usar o identificador de publicidade do aparelho para exibir anúncios; onde a lei exige, pedimos seu consentimento antes. Saiba mais em policies.google.com/technologies/ads."],
   ["Seus direitos (LGPD)", "Você pode exportar todos os seus dados (Ajustes → Exportar backup) e excluir sua conta e todos os dados permanentemente (Ajustes → Excluir minha conta)."],
   ["Segurança", "A comunicação com o servidor é criptografada (HTTPS) e o acesso é protegido por token pessoal armazenado de forma segura no aparelho."],
   ["Contato", "Dúvidas sobre privacidade: leticiarodrigues173@gmail.com"],

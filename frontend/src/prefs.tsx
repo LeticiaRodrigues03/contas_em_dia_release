@@ -10,9 +10,11 @@ export interface Prefs {
   daysBefore: number; // 5 | 3 | 1
   notifyOnDueDay: boolean;
   theme: ThemePref;
+  /** First-launch notification explanation already shown (never ask twice). */
+  notificationPromptDone: boolean;
 }
 
-const DEFAULTS: Prefs = { notificationsEnabled: true, daysBefore: 5, notifyOnDueDay: true, theme: "system" };
+const DEFAULTS: Prefs = { notificationsEnabled: true, daysBefore: 5, notifyOnDueDay: true, theme: "system", notificationPromptDone: false };
 const KEY = "contas_em_dia_prefs";
 
 interface PrefsState {

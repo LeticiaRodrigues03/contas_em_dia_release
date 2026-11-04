@@ -99,13 +99,20 @@ export async function syncReminders(bills: Bill[], prefs: Prefs) {
   }
 }
 
-export async function sendTestNotification(): Promise<boolean> {
-  if (!(await requestPermission())) return false;
-  await Notifications.scheduleNotificationAsync({
-    content: { title: "🔔 Teste de notificação", body: "Se você está vendo isso, os lembretes estão funcionando." },
-    trigger: { type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: 3, channelId: CHANNEL },
-  });
-  return true;
+export interface PermissionState {
+  granted: boolean;
+  canAskAgain: boolean;
+}
+
+/** Current OS-level permission without prompting. */
+export async function getPermissionState(): Promise<PermissionState> {
+  if (!supported) return { granted: false, canAskAgain: false };
+  try {
+    const p = await Notifications.getPermissionsAsync();
+    return { granted: p.granted, canAskAgain: p.canAskAgain };
+  } catch {
+    return { granted: false, canAskAgain: false };
+  }
 }
 
 export const notificationsSupported = supported;

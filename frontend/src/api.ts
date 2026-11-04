@@ -1,5 +1,5 @@
 import { storage } from "@/src/utils/storage";
-import type { AuthOut, BackupOut, Bill, BillInput, ImportOut, PaidOut, User } from "@/src/types";
+import type { AuthOut, BackupOut, Bill, BillInput, CategoryListOut, CustomCategory, Family, ImportOut, PaidOut, User } from "@/src/types";
 
 const BASE = `${process.env.EXPO_PUBLIC_BACKEND_URL}/api`;
 export const TOKEN_KEY = "contas_em_dia_token";
@@ -73,6 +73,22 @@ export const api = {
   exportBackup: () => request<BackupOut>("/backup/export"),
   importBackup: (bills: BillInput[], replace: boolean) =>
     request<ImportOut>("/backup/import", json("POST", { bills, replace })),
+
+  listCategories: () => request<string[]>("/categories"),
+  listCustomCategories: () => request<CategoryListOut>("/categories/custom"),
+  createCategory: (name: string) => request<CustomCategory>("/categories/custom", json("POST", { name })),
+  renameCategory: (id: string, name: string) => request<CustomCategory>(`/categories/custom/${id}`, json("PUT", { name })),
+  deleteCategory: (id: string) => request<void>(`/categories/custom/${id}`, json("DELETE")),
+
+  getFamily: () => request<Family | null>("/family"),
+  createFamily: (name: string) => request<Family>("/family", json("POST", { name })),
+  joinFamily: (code: string) => request<Family>("/family/join", json("POST", { code })),
+  leaveFamily: () => request<void>("/family/leave", json("POST", {})),
+  removeFamilyMember: (memberId: string) => request<Family>(`/family/members/${memberId}`, json("DELETE")),
+  regenerateFamilyCode: () => request<Family>("/family/code", json("POST", {})),
 };
 
 export const BILLS_KEY = ["bills"] as const;
+export const CATEGORIES_KEY = ["categories"] as const;
+export const CUSTOM_CATEGORIES_KEY = ["categories", "custom"] as const;
+export const FAMILY_KEY = ["family"] as const;

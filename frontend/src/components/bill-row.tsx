@@ -4,6 +4,7 @@ import { Pressable, Text, View } from "react-native";
 
 import { amountLabel, billStatus, dueLabel, formatDate } from "@/src/bills";
 import { useTogglePaid } from "@/src/hooks/use-bills";
+import { useBillOwnerName } from "@/src/hooks/use-family";
 import { fonts, makeStyles, radius, spacing, ThemeColors, useTheme } from "@/src/theme";
 import type { Bill } from "@/src/types";
 
@@ -16,6 +17,7 @@ export function BillRow({ bill, testIDPrefix = "bill" }: { bill: Bill; testIDPre
   const styles = useStyles();
   const { colors } = useTheme();
   const toggle = useTogglePaid();
+  const ownerName = useBillOwnerName(bill.user_id);
   const color = statusColor(colors, bill);
 
   return (
@@ -41,6 +43,12 @@ export function BillRow({ bill, testIDPrefix = "bill" }: { bill: Bill; testIDPre
             {bill.name}
           </Text>
           {bill.recurring ? <Ionicons name="repeat" size={14} color={colors.muted} /> : null}
+          {ownerName ? (
+            <View style={styles.ownerPill} testID={`${testIDPrefix}-owner-${bill.id}`}>
+              <Ionicons name="person" size={10} color={colors.brandPrimary} />
+              <Text style={styles.ownerText} numberOfLines={1}>{ownerName}</Text>
+            </View>
+          ) : null}
         </View>
         <Text style={styles.meta} numberOfLines={1}>
           {bill.category} · <Text style={{ color }}>{dueLabel(bill)}</Text>
@@ -64,6 +72,8 @@ const useStyles = makeStyles((c) => ({
   titleLine: { flexDirection: "row", alignItems: "center", gap: 6 },
   name: { fontFamily: fonts.bold, fontSize: 16, color: c.onSurfaceSecondary, flexShrink: 1 },
   namePaid: { color: c.muted, textDecorationLine: "line-through" },
+  ownerPill: { flexDirection: "row", alignItems: "center", gap: 3, paddingHorizontal: 6, paddingVertical: 1, borderRadius: radius.pill, backgroundColor: c.brandTertiary, maxWidth: 90 },
+  ownerText: { fontFamily: fonts.bold, fontSize: 11, color: c.brandPrimary },
   meta: { fontFamily: fonts.medium, fontSize: 13, color: c.muted },
   right: { alignItems: "flex-end", gap: 4 },
   amount: { fontFamily: fonts.bold, fontSize: 14, color: c.onSurfaceSecondary },

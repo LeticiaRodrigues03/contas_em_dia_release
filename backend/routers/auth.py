@@ -7,6 +7,7 @@ from auth_utils import create_token, current_user, password_hash
 from db import db
 from models.bill import now_utc
 from models.user import AuthOut, LoginIn, RegisterIn, UserOut
+from sharing import detach_user
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -39,5 +40,7 @@ async def me(user: dict = Depends(current_user)):
 
 @router.delete("/me", status_code=204)
 async def delete_account(user: dict = Depends(current_user)):
+    await detach_user(user["id"])
+    await db.categories.delete_many({"user_id": user["id"]})
     await db.bills.delete_many({"user_id": user["id"]})
     await db.users.delete_one({"id": user["id"]})

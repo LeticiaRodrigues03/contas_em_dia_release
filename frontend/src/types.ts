@@ -46,6 +46,34 @@ export interface ImportOut {
   imported: number;
 }
 
+export interface CustomCategory {
+  id: string;
+  user_id: string;
+  name: string;
+  created_at: string;
+}
+
+export interface CategoryListOut {
+  defaults: string[];
+  custom: CustomCategory[];
+}
+
+export interface FamilyMember {
+  id: string;
+  name: string;
+  email: string;
+  is_owner: boolean;
+}
+
+export interface Family {
+  id: string;
+  name: string;
+  code: string;
+  owner_id: string;
+  members: FamilyMember[];
+  created_at: string;
+}
+
 export const CATEGORIES = [
   "Moradia", "Energia", "Água", "Internet", "Telefone", "Cartão",
   "Transporte", "Saúde", "Educação", "Lazer", "Impostos", "Outros",
