@@ -1,0 +1,37 @@
+{
+  "summary": "Checked the release-crash fix (versionCode 106): app.json, the resolved Expo config, expo-doctor, tsc, a simulated Android prebuild in /tmp/pb, the backend regression suite and a web smoke test. Config, prebuild, tsc, backend (25/25) and web smoke all pass. expo-doctor FAILS 1 of 20 checks: expo-constants, a required peer of expo-router, is not a direct dependency. It is still autolinked transitively (it shows up in the expo-modules-autolinking resolve output), so it is probably not the crash cause, but expo-doctor itself warns 'Your app may crash outside of Expo Go'. No APK/AAB could be built here, so the runtime crash fix is not verified on a device.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [],
+    "react_native_issues": [
+      {"component": "expo-constants (missing peer dependency)", "issue": "expo-doctor fails 'Check that required peer dependencies are installed': expo-router requires expo-constants ^58.0.15, but it is not listed in package.json (it is only present transitively via expo 58.0.15). Reference: /app/frontend/package.json:14-58"}
+    ]
+  },
+  "test_report_links": [
+    "/app/test_reports/pytest/pytest_results_iter5.xml",
+    "/app/backend/tests/test_contas_em_dia.py",
+    "/app/backend/tests/test_family_categories.py",
+    "/app/backend/tests/test_privacy.py"
+  ],
+  "action_items": [
+    "Run `cd /app/frontend && npx expo install expo-constants` so it is a direct dependency, then re-run `npx expo-doctor` (needs 20/20). This is required by the review criteria and removes a possible native-crash risk.",
+    "Before resubmitting, get the real crash stack trace from Play Console (Android vitals > Crashes & ANRs) for versionCode 105 to confirm that R8/shrinkResources caused it. The current fix is a plausible hypothesis, not a confirmed RCA. If possible, run the release AAB on a device via internal testing first.",
+    "If R8 is ever turned back on: android/app/proguard-rules.pro only has keep rules for reanimated. Add keep rules for com.google.android.gms.ads, react-native-google-mobile-ads (io.invertase.googlemobileads), expo modules, etc. via expo-build-properties android.extraProguardRules."
+  ],
+  "critical_code_review_comments": [
+    "app.json is valid: version 1.1.1, android.versionCode 106 (integer > 105), ios.buildNumber '3', package com.emergent.vencimentos.kjfj0h. expo-build-properties has enableProguardInReleaseBuilds=false and enableShrinkResourcesInReleaseBuilds=false. The AdMob app IDs match ca-app-pub-\\d{16}~\\d{10}.",
+    "The simulated prebuild generated build.gradle with versionCode 106 / versionName \"1.1.1\". gradle.properties has android.enableMinifyInReleaseBuilds=false and android.enableShrinkResourcesInReleaseBuilds=false, so the release buildType gets minifyEnabled=false and shrinkResources=false. AndroidManifest has APPLICATION_ID=ca-app-pub-2657624729248606~7442066159, DELAY_APP_MEASUREMENT_INIT and the OPTIMIZE_* flags.",
+    "Autolinking includes react-native-google-mobile-ads, expo-constants, expo-notifications, expo-secure-store, etc. It also links @react-native-masked-view/masked-view, which comes in transitively.",
+    "ad-banner.native.tsx wraps the consent and initialize calls in try/catch, and the banner renders nothing until init succeeds. No crash path seen in JS.",
+    "Test infra: tests/test_family_categories.py does `from conftest import ...`, so the suite fails at collection unless run with PYTHONPATH=tests. Run it as `PYTHONPATH=tests pytest tests/`."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "100% (25/25)", "frontend": "100% web smoke (login, Home summary-card + home-family-card, Filtrar, Ajustes version 1.1.1, 0 console errors)"},
+  "seed_data_creation": "None. Only the existing demo account was used; the temporary prebuild copy /tmp/pb was removed.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Prebuild simulation: copy app.json, package.json, assets, app and src to /tmp/pb, symlink node_modules, git init, then `npx expo prebuild --platform android --no-install`. Never run prebuild in /app/frontend. Run backend tests with `PYTHONPATH=tests` from /app/backend and EXPO_BACKEND_URL set.",
+  "rca_of_issue": "Hypothesis (unverified without a device or Play crash log): R8 minification and resource shrinking in release, with no keep rules, stripped classes or resources that are loaded by reflection (GMS Ads, Expo modules), which crashed the app on startup only in release builds. The config now disables both, and prebuild confirms that. Secondary risk: the expo-constants peer dependency missing from package.json."
+}

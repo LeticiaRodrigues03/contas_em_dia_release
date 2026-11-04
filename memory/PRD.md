@@ -67,3 +67,8 @@ Pessoa física que quer não esquecer vencimentos (luz, aluguel, cartão) e ver 
 - Ajustes Strict TS API: `ViewInstance` no ref do report, `makeStyles` sem `StyleSheet.NamedStyles`, FlatList `undefined` em vez de `null`, RefreshControl onRefresh void; `File.write` agora async (backup.ts).
 - web.output mantido `single` (SPA p/ GitHub Pages). Tab bar: altura 60+inset e lineHeight 16 (labels cortados no RN 0.88).
 - expo-doctor 20/20; tsc e eslint limpos; regressão frontend iteration_4 OK.
+
+## Hotfix Android v1.1.1 (versionCode 106) — jun/2026
+- Play reportou "O aplicativo apresenta falhas continuamente" após a atualização (versionCode 105).
+- Análise via `expo prebuild` simulado: AdMob App ID presente no manifesto; causa provável = R8/minify + shrinkResources ativados sem regras keep (crash só em release).
+- Correção: expo-build-properties → enableProguardInReleaseBuilds=false, enableShrinkResourcesInReleaseBuilds=false; versionCode 106, versionName 1.1.1, iOS buildNumber 3. Nenhuma mudança funcional.
