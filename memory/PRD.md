@@ -72,3 +72,9 @@ Pessoa física que quer não esquecer vencimentos (luz, aluguel, cartão) e ver 
 - Play reportou "O aplicativo apresenta falhas continuamente" após a atualização (versionCode 105).
 - Análise via `expo prebuild` simulado: AdMob App ID presente no manifesto; causa provável = R8/minify + shrinkResources ativados sem regras keep (crash só em release).
 - Correção: expo-build-properties → enableProguardInReleaseBuilds=false, enableShrinkResourcesInReleaseBuilds=false; versionCode 106, versionName 1.1.1, iOS buildNumber 3. Nenhuma mudança funcional.
+
+## Correção Advertising ID v1.1.2 (versionCode 108) — jun/2026
+- Play Console: declaração de ID de publicidade sem a permissão no manifesto. react-native-google-mobile-ads 17.4.0 não declara AD_ID.
+- Correção: adicionado "com.google.android.gms.permission.AD_ID" em android.permissions (verificado no AndroidManifest gerado por prebuild).
+- Chave expo-build-properties atualizada para enableMinifyInReleaseBuilds=false (+ shrinkResources=false). R8 continua desligado.
+- versionCode 108, versionName 1.1.2. Pacote com.emergent.vencimentos.kjfj0h mantido. IDs AdMob inalterados.
